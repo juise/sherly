@@ -1,0 +1,6 @@
+code:add_patha("../sherly/ebin/").
+code:add_patha("../sherly/deps/lager/ebin/").
+code:add_patha("../sherly/deps/cowboy/ebin/").
+code:add_patha("../sherly/deps/cowlib/ebin/").
+code:add_patha("../sherly/deps/ranch/ebin/").
+

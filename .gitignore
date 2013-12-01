@@ -1,5 +1,8 @@
 .eunit
 deps
+ebin
+logs
+rel/sherly
 *.o
 *.beam
 *.plt

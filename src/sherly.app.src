@@ -1,0 +1,13 @@
+{application, sherly,
+ [
+  {description, "Erlang web shell"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  cowboy
+                 ]},
+  {mod, { sherly_app, []}},
+  {env, []}
+ ]}.
