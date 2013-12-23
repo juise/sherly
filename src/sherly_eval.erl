@@ -50,8 +50,10 @@ parse(Tokens) ->
     lists:foldl(fun filter/2, Exprs, Exprs).
 
 
+filter({_, _, {_, _, {atom, _, os}, {atom, _, cmd}}, _}, _) -> error({disabled_fun, cmd});
 filter({_, _, {_, _, {atom, _, init}, {atom, _, Fun}}, _}, _) -> error({disabled_fun, Fun});
 filter({_, _, {_, _, {atom, _, erlang}, {atom, _, halt}}, _}, _) -> error({disabled_fun, halt});
-filter({_, _, {_, _, {atom, _, shell_default}, {atom, _, q}}, _}, _) -> error({disabled_fun, q});
+filter({_, _, {_, _, {atom, _, application}, {atom, _, stop}}, _}, _) -> error({disabled_fun, stop});
+filter({_, _, {_, _, {atom, _, shell_default}, {atom, _, Fun}}, _}, _) -> error({disabled_fun, Fun});
 filter(_, Exprs) -> Exprs.
 

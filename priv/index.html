@@ -11,6 +11,14 @@
 
     <script type="text/javascript">
         var ws = null;
+        var srv = "ws://localhost:8080/websocket";
+
+        var THRESHOLD = 10000;
+
+        function sleep(time) {
+            timeout = new Date().getTime() + time;
+            while (new Date() < timeout) { /* Hm, javascript is very - very strange language */ }
+        };
 
         jQuery(document).ready(function($) {
             $('body').terminal(function(command, term) {
@@ -20,16 +28,29 @@
                 greetings: null,
 
                 onInit: function(term) {
-                    (init = function() {
-                        ws = new WebSocket("ws://192.168.0.92:8080/websocket");
+                    (init = function(timeout) {
+                        ws = new WebSocket(srv);
 
-                        ws.onclose = function(evt) { init() };
-                        ws.onerror = function(evt) { init() };
+                        ws.onopen = function(evt) {
+                            console.warn("Websocket connection to '%s' successfull established.", srv);
+                        };
 
-                        ws.onmessage = function(evt) { term.echo(evt.data) };
-                    })();
+                        ws.onmessage = function(evt) {
+                            term.echo(evt.data);
+                        };
+
+                        ws.onerror = function(evt) {
+                            ws.close();
+                        };
+
+                        ws.onclose = function(evt) {
+                            sleep(timeout);
+                            init(Math.min(timeout + 500, THRESHOLD));
+                        };
+                    })(0);
 
                     ws.onopen = function(evt) {
+                        console.warn("Websocket connection to '%s' successfull established.", srv);
                         ws.send("version")
                     };
                 },
