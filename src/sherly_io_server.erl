@@ -22,7 +22,7 @@ start_link() ->
     end.
 
 init() ->
-    ?MODULE:loop().
+    whereis(?MODULE) == self() andalso ?MODULE:loop().
 
 loop() ->
     receive
@@ -31,6 +31,9 @@ loop() ->
             reply(From, ReplyAs, Reply, Text);
         _Message ->
             nop
+    after
+        1000 ->
+            ?MODULE:loop()
     end,
     ?MODULE:loop().
 
