@@ -1,41 +1,53 @@
 -module(sherly_io_server).
 
+-behaviour(gen_server).
+
 %% API
--export([start_link/0,
-         init/0,
-         loop/0]).
+-export([start_link/0]).
+
+%% gen_server callbacks
+-export([init/1,
+         handle_call/3,
+         handle_cast/2,
+         handle_info/2,
+         terminate/2,
+         code_change/3]).
+
+-record(state, {}).
 
 %% ===================================================================
 %% API functions
 %% ===================================================================
 
 start_link() ->
-    case whereis(?MODULE) of
-        undefined ->
-            try register(?MODULE, spawn_link(?MODULE, init, [])) of
-                true -> {ok, whereis(?MODULE)}
-            catch
-                error:_Reason -> {error, already_started}
-            end;
-        Pid when is_pid(Pid) ->
-            {error, already_started}
-    end.
+    gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
-init() ->
-    whereis(?MODULE) == self() andalso ?MODULE:loop().
+%% ===================================================================
+%% gen_server callbacks
+%% ===================================================================
 
-loop() ->
-    receive
-        {io_request, From, ReplyAs, Request} ->
-            {Reply, Text} = request(Request),
-            reply(From, ReplyAs, Reply, Text);
-        _Message ->
-            nop
-    after
-        1000 ->
-            ?MODULE:loop()
-    end,
-    ?MODULE:loop().
+init([]) ->
+    {ok, #state{}}.
+
+handle_call(_Request, _From, State) ->
+    {reply, ok, State}.
+
+handle_cast(_Request, State) ->
+    {noreply, State}.
+
+handle_info({io_request, From, ReplyAs, Request}, State) ->
+    {Reply, Text} = request(Request),
+    reply(From, ReplyAs, Reply, Text),
+    {noreply, State};
+
+handle_info(_Info, State) ->
+    {noreply, State}.
+
+terminate(_Reason, _State) ->
+    ok.
+
+code_change(_OldVsn, State, _Extra) ->
+    {ok, State}.
 
 %% ===================================================================
 %% Internal functions
@@ -77,3 +89,4 @@ multi_request([_ | _], Error) ->
     Error;
 multi_request([], Result) ->
     Result.
+
