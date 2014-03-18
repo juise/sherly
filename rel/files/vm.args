@@ -1,5 +1,6 @@
 ## Name of the node
--name sherly@127.0.0.1
+#-name sherly@127.0.0.1
+-name {{service_name}}
 
 ## Cookie for distributed erlang
 -setcookie sherly
@@ -16,4 +17,4 @@
 ##-env ERL_MAX_PORTS 4096
 
 ## Tweak GC to run more often
-##-env ERL_FULLSWEEP_AFTER 10
+-env ERL_FULLSWEEP_AFTER 10
